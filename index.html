@@ -3,108 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>A Special Wish</title>
+    <title>For You</title>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
     
     <style>
         /* --- CORE STYLES --- */
         :root {
-            --bg-gradient-start: #fff0f3;
-            --bg-gradient-end: #fff5f5;
-            --accent-color: #ff8fa3;
-            --text-color: #594a4e;
-            --paper-color: #fffdf0;
+            --bg-start: #fff0f3;
+            --bg-end: #fff5f5;
+            --accent: #ff8fa3;
+            --text: #594a4e;
+            --paper: #fffdf0;
         }
 
         * { box-sizing: border-box; }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             font-family: 'Quicksand', sans-serif;
-            color: var(--text-color);
-            background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text);
+            background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
             overflow-x: hidden;
             overscroll-behavior-y: none;
         }
 
-        /* --- MUSIC BUTTON --- */
-        .music-btn {
+        /* --- 0. START SCREEN (FIXES MUSIC) --- */
+        #stage-start {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: white;
-            border: 2px solid var(--accent-color);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #fff0f3;
+            z-index: 999;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            transition: opacity 1s;
+        }
+        
+        .start-btn {
+            background: white;
+            border: 2px solid var(--accent);
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            color: var(--accent);
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(255, 143, 163, 0.3);
+            animation: pulse 2s infinite;
         }
 
-        /* --- STAGE 1: SCROLL --- */
+        /* --- 1. SCROLL SECTION --- */
         #stage-scroll {
             height: 300vh;
             position: relative;
             background-image: radial-gradient(#ffccd5 1px, transparent 1px);
             background-size: 40px 40px;
+            opacity: 0; /* Hidden until start */
+            transition: opacity 1s;
         }
 
-        .fixed-cupid-container {
+        .fixed-cupid {
             position: fixed;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             z-index: 10;
             text-align: center;
             pointer-events: none;
-            transition: all 0.5s ease-out;
         }
 
         .cupid-emoji {
-            font-size: 6rem;
+            font-size: 5rem;
             display: block;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
             transition: transform 0.3s;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
         }
 
         .speech-bubble {
             background: white;
-            padding: 15px 25px;
+            padding: 12px 20px;
             border-radius: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 20px;
             font-size: 1.1rem;
             opacity: 0;
             transform: translateY(10px);
-            transition: all 0.5s ease;
+            transition: all 0.5s;
             position: absolute;
             bottom: 100%; left: 50%;
             transform: translateX(-50%);
             width: max-content;
-            max-width: 80vw;
+            max-width: 85vw;
         }
         .speech-bubble.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
-        
-        .scroll-indicator {
-            position: fixed;
-            bottom: 30px; width: 100%;
-            text-align: center;
-            animation: float 2s infinite ease-in-out;
-            color: var(--accent-color);
-            z-index: 5;
-        }
 
-        /* --- STAGE 2: GAME --- */
+        /* --- 2. GAME SECTION --- */
         #stage-game {
             display: none;
-            position: fixed;
-            top: 0; left: 0;
+            position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(255,255,255,0.98);
             z-index: 100;
             flex-direction: column;
             align-items: center;
@@ -115,363 +113,347 @@
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             border: 2px solid #ffe0e6;
-            touch-action: none;
         }
 
-        /* --- STAGE 3: MEMORY LANE (SLIDESHOW) --- */
-        #stage-memory {
+        /* --- 3. BLOOMING GARDEN (NEW) --- */
+        #stage-garden {
             display: none;
-            position: fixed;
-            top: 0; left: 0;
+            position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
-            background: #fff0f3;
+            background: #fff5f5;
             z-index: 150;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 20px;
         }
-        .memory-text {
+        
+        .garden-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .flower-pot {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .flower-pot:hover { transform: scale(1.1); }
+        
+        .flower { font-size: 4rem; transition: all 0.5s ease-out; }
+        .pot-label { 
+            margin-top: 10px; 
             font-family: 'Great Vibes', cursive;
-            font-size: 2.5rem;
+            font-size: 1.5rem;
             color: #d63384;
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 1s ease;
+            transition: opacity 0.5s;
         }
-        .memory-text.visible { opacity: 1; transform: translateY(0); }
 
-        /* --- STAGE 4: WISH --- */
+        /* --- 4. FINAL WISH --- */
         #stage-wish {
             display: none;
-            position: fixed;
-            top: 0; left: 0;
+            position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
             background: radial-gradient(circle, #fff0f3 0%, #ffe6e9 100%);
             z-index: 200;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
             padding: 2rem;
         }
 
-        /* Paper Letter Style */
         .paper-letter {
-            background: var(--paper-color);
+            background: var(--paper);
             padding: 30px;
-            border-radius: 5px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-radius: 2px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             max-width: 500px;
+            width: 90%;
             margin-bottom: 40px;
-            position: relative;
             transform: rotate(-1deg);
-        }
-        .paper-letter::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 5px;
-            background: repeating-linear-gradient(45deg, #ff8fa3, #ff8fa3 10px, white 10px, white 20px);
-            border-radius: 5px 5px 0 0;
         }
 
         .quote-text {
             font-family: 'Great Vibes', cursive;
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: #594a4e;
-            line-height: 1.6;
-            min-height: 100px;
+            line-height: 1.5;
+            min-height: 80px;
         }
 
-        .cake-wrapper {
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        .cake-wrapper:hover { transform: scale(1.05); }
-        .cake-emoji { font-size: 5rem; }
-        
-        .final-message {
+        .cake-emoji { font-size: 5rem; cursor: pointer; transition: transform 0.3s; }
+        .cake-emoji:hover { transform: scale(1.1); }
+
+        .final-msg {
             margin-top: 30px;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            color: var(--text-color);
             opacity: 0;
-            transform: scale(0.9);
-            transition: all 0.8s;
+            transform: translateY(20px);
+            transition: all 1s;
         }
-        .final-message.reveal { opacity: 1; transform: scale(1); }
+        .final-msg.show { opacity: 1; transform: translateY(0); }
 
-        /* Animations */
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
-        .confetti { position: absolute; width: 10px; height: 10px; animation: fall linear forwards; }
-        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+        /* --- ANIMATIONS & PARTICLES --- */
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        
+        .bg-heart {
+            position: fixed;
+            color: #ffccd5;
+            font-size: 20px;
+            z-index: 0;
+            animation: floatUp linear infinite;
+            opacity: 0.5;
+        }
+        @keyframes floatUp { to { transform: translateY(-100vh); opacity: 0; } }
 
     </style>
 </head>
 <body>
 
-    <!-- AUDIO PLAYER (Hidden) -->
-    <!-- Note: Browsers block auto-play. User must interact with the page first. -->
+    <!-- BACKGROUND AUDIO -->
+    <!-- Using a gentle piano track -->
     <audio id="bg-music" loop>
-        <!-- A soft, royalty free piano track -->
         <source src="https://cdn.pixabay.com/audio/2022/02/07/audio_1423377771.mp3" type="audio/mp3">
     </audio>
-    <div class="music-btn" onclick="toggleMusic()">🎵</div>
 
-    <!-- STAGE 1: SCROLL -->
+    <!-- 0. START SCREEN -->
+    <div id="stage-start">
+        <div style="font-size: 4rem; margin-bottom: 20px;">🎁</div>
+        <button class="start-btn" onclick="startExperience()">Tap to Open Gift</button>
+    </div>
+
+    <!-- 1. SCROLL -->
     <div id="stage-scroll">
-        <div class="fixed-cupid-container">
-            <div class="speech-bubble" id="cupid-text">Hello Madam Ji! 👋</div>
+        <div class="fixed-cupid">
+            <div class="speech-bubble" id="cupid-text">Hello!</div>
             <div class="cupid-emoji" id="cupid-char">👼</div>
         </div>
-        <div class="scroll-indicator" id="scroll-hint">Scroll down slowly...</div>
-    </div>
-
-    <!-- STAGE 2: GAME -->
-    <div id="stage-game">
-        <div style="text-align:center; margin-bottom: 20px;">
-            <h2 style="color: #d63384;">Catch the White Roses 🤍</h2>
-            <p>Gather 5 to unlock the surprise</p>
-            <h3 id="score-board">Collected: 0 / 5</h3>
+        <div style="position:fixed; bottom:30px; width:100%; text-align:center; color:#ff8fa3; animation: pulse 2s infinite;">
+            Scroll slowly...
         </div>
-        <canvas id="gameCanvas" width="320" height="450"></canvas>
     </div>
 
-    <!-- STAGE 3: MEMORY LANE -->
-    <div id="stage-memory">
-        <div class="memory-text" id="memory-text"></div>
+    <!-- 2. GAME -->
+    <div id="stage-game">
+        <h2 style="color:#d63384; margin-bottom:10px;">Catch 5 Roses 🌹</h2>
+        <h3 id="score-board">0 / 5</h3>
+        <canvas id="gameCanvas" width="320" height="400"></canvas>
     </div>
 
-    <!-- STAGE 4: FINAL WISH -->
+    <!-- 3. GARDEN (NEW) -->
+    <div id="stage-garden">
+        <h2 style="color:#594a4e; margin-bottom: 40px;">Tap the buds to see what blooms... 🌸</h2>
+        <div class="garden-container" id="garden-container">
+            <!-- Flowers generated by JS -->
+        </div>
+    </div>
+
+    <!-- 4. FINAL WISH -->
     <div id="stage-wish">
         <div class="paper-letter">
             <div class="quote-text" id="quote-display"></div>
         </div>
         
-        <div class="cake-wrapper" id="cake-section" onclick="blowCandles()" style="opacity:0; transition: opacity 1s;">
-            <div class="cake-emoji">🎂</div>
-            <div style="font-size: 0.9rem; color: #999;">Make a wish & tap me!</div>
+        <div id="cake-section" style="text-align:center; opacity:0; transition:opacity 1s;">
+            <div class="cake-emoji" onclick="blowCandles()">🎂</div>
+            <p style="font-size:0.9rem; color:#999;">Make a wish & tap!</p>
         </div>
 
-        <div class="final-message" id="birthday-text">
-            Happy Birthday!
-        </div>
+        <div class="final-msg" id="final-msg"></div>
     </div>
 
     <script>
         /* =================================================================
-           💖 CONFIGURATION AREA - EDIT HERE FOR MADAM JI 💖
+           💖 CONFIGURATION AREA - EDIT THIS FOR MADAM JI 💖
         ================================================================= */
         const CONFIG = {
-            // 1. The Name
+            // Name
             name: "Madam Ji", 
-
-            // 2. The Final Birthday Message
+            
+            // Final Birthday Wish
             birthdayMessage: "Happy Birthday, Madam Ji! ❤️",
 
-            // 3. The "Memory Lane" - 3 short compliments that show up before the letter
-            // (Keep them inside the quotes "", separate with commas)
-            memories: [
-                "Your smile lights up the world...",
-                "You are strong and kind...",
-                "I am so lucky to know you."
-            ],
+            // The "Garden" Words: 3 words describing her
+            gardenWords: ["Grace", "Kindness", "Beauty"],
 
-            // 4. The Poetic Letter (Use \n for new line)
-            letterQuote: "Like a white rose, you are rare and beautiful.\nMay your year be filled with as much joy\nas you bring to everyone around you.",
+            // The Letter Content
+            letter: "Like a rose in full bloom, you bring color and joy to the world.\nMay your special day be filled with love and laughter.",
 
-            // Cupid's dialogue while scrolling
+            // Cupid's Scroll Text
             scrollTexts: [
                 "Hello Madam Ji! 👋",
-                "I have a mission... 🏹",
-                "To deliver a smile! 💖",
-                "Almost there...",
-                "Catch the roses! 👇"
+                "I have a surprise... 🎁",
+                "But first...",
+                "We need some flowers! 🌹",
+                "Catch them below! 👇"
             ]
         };
+
         /* ================================================================= */
 
+        // --- GLOBAL VARIABLES ---
+        const audio = document.getElementById('bg-music');
+        let currentStage = 0; // 0=Start, 1=Scroll, 2=Game, 3=Garden, 4=Wish
 
-        // --- LOGIC ---
-        const stageScroll = document.getElementById('stage-scroll');
-        const cupidChar = document.getElementById('cupid-char');
-        const cupidText = document.getElementById('cupid-text');
-        
-        const stageGame = document.getElementById('stage-game');
-        const scoreBoard = document.getElementById('score-board');
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+        // --- 0. START EXPERIENCE ---
+        function startExperience() {
+            // 1. Play Music (Allowed because of click)
+            audio.volume = 0.4;
+            audio.play().catch(e => console.log("Audio failed", e));
 
-        const stageMemory = document.getElementById('stage-memory');
-        const memoryText = document.getElementById('memory-text');
-
-        const stageWish = document.getElementById('stage-wish');
-        const quoteDisplay = document.getElementById('quote-display');
-        const birthdayText = document.getElementById('birthday-text');
-
-        // Music Logic
-        const music = document.getElementById('bg-music');
-        let musicPlaying = false;
-        function toggleMusic() {
-            if(musicPlaying) {
-                music.pause();
-                document.querySelector('.music-btn').innerText = "🔇";
-            } else {
-                music.play().catch(e => console.log("Click to play needed"));
-                document.querySelector('.music-btn').innerText = "🎵";
-            }
-            musicPlaying = !musicPlaying;
+            // 2. Show Scroll Section
+            document.getElementById('stage-start').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('stage-start').style.display = 'none';
+                document.getElementById('stage-scroll').style.opacity = '1';
+                createBackgroundHearts();
+            }, 1000);
         }
 
-        // 1. SCROLL HANDLER
+        // --- 1. SCROLL LOGIC ---
+        const cupidText = document.getElementById('cupid-text');
+        const cupidChar = document.getElementById('cupid-char');
+        
         window.addEventListener('scroll', () => {
-            const maxScroll = document.body.scrollHeight - window.innerHeight;
-            const scrolled = window.scrollY;
-            const progress = Math.min(scrolled / maxScroll, 1);
+            if(document.getElementById('stage-scroll').style.opacity === '0') return;
 
-            const textIndex = Math.floor(progress * CONFIG.scrollTexts.length);
-            if (CONFIG.scrollTexts[textIndex]) {
-                cupidText.innerText = CONFIG.scrollTexts[textIndex];
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scrollP = Math.min(window.scrollY / maxScroll, 1);
+
+            // Text
+            const txtIdx = Math.floor(scrollP * CONFIG.scrollTexts.length);
+            if(CONFIG.scrollTexts[txtIdx]) {
+                cupidText.innerText = CONFIG.scrollTexts[txtIdx];
                 cupidText.classList.add('show');
             }
 
-            // Cupid Transformation
-            if (progress < 0.2) {
-                cupidChar.innerText = "👼"; 
-                cupidChar.style.transform = `scale(1) rotate(0deg)`;
-            } else if (progress < 0.5) {
-                cupidChar.innerText = "🏹"; 
-                cupidChar.style.transform = `scale(1.2) rotate(-10deg)`;
-            } else if (progress < 0.8) {
-                cupidChar.innerText = "💘"; 
-                cupidChar.style.transform = `scale(1.3) rotate(10deg)`;
+            // Cupid
+            if(scrollP < 0.3) {
+                cupidChar.innerText = "👼";
+                cupidChar.style.transform = `scale(1)`;
+            } else if (scrollP < 0.8) {
+                cupidChar.innerText = "🏹";
+                cupidChar.style.transform = `scale(1.2) rotate(-15deg)`;
             } else {
                 cupidChar.style.opacity = '0';
-                document.getElementById('scroll-hint').style.opacity = '0';
-                if(stageGame.style.display !== 'flex') launchGame();
+                if(currentStage === 0) startGame();
             }
         });
 
-        // 2. GAME LOGIC
-        let gameRunning = false;
+        // --- 2. GAME LOGIC ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
         let score = 0;
-        let playerX = canvas.width / 2;
+        let gameActive = false;
         let roses = [];
+        let playerX = 150;
 
-        function launchGame() {
+        function startGame() {
+            currentStage = 1;
             window.scrollTo(0,0);
-            stageScroll.style.display = 'none';
-            stageGame.style.display = 'flex';
+            document.getElementById('stage-scroll').style.display = 'none';
+            document.getElementById('stage-game').style.display = 'flex';
             
             if(window.innerWidth < 400) canvas.width = window.innerWidth - 40;
+            playerX = canvas.width / 2;
 
-            gameRunning = true;
+            gameActive = true;
             gameLoop();
             spawnRose();
-            
-            canvas.addEventListener('mousemove', e => {
-                const rect = canvas.getBoundingClientRect();
-                playerX = e.clientX - rect.left;
-            });
+
+            // Controls
+            canvas.addEventListener('mousemove', e => playerX = e.offsetX);
             canvas.addEventListener('touchmove', e => {
                 e.preventDefault();
                 const rect = canvas.getBoundingClientRect();
                 playerX = e.touches[0].clientX - rect.left;
-            }, { passive: false });
-        }
-
-        class Rose {
-            constructor() {
-                this.x = Math.random() * (canvas.width - 30) + 15;
-                this.y = -30;
-                this.speed = Math.random() * 2 + 2;
-                this.size = 25;
-            }
-            update() { this.y += this.speed; }
-            draw() {
-                ctx.font = `${this.size}px Arial`;
-                ctx.fillText("🤍", this.x - 10, this.y);
-            }
+            }, {passive:false});
         }
 
         function spawnRose() {
-            if(!gameRunning) return;
-            roses.push(new Rose());
+            if(!gameActive) return;
+            roses.push({
+                x: Math.random()*(canvas.width-30)+15,
+                y: -30,
+                speed: Math.random()*2 + 2
+            });
             setTimeout(spawnRose, 800);
         }
 
         function gameLoop() {
-            if(!gameRunning) return;
+            if(!gameActive) return;
             ctx.clearRect(0,0, canvas.width, canvas.height);
-
-            // Cupid
+            
+            // Player
             ctx.font = "40px Arial";
-            ctx.fillText("👼", playerX - 20, canvas.height - 10);
+            ctx.fillText("👼", playerX-20, canvas.height-10);
 
             // Roses
-            for(let i = 0; i < roses.length; i++) {
+            for(let i=0; i<roses.length; i++) {
                 let r = roses[i];
-                r.update();
-                r.draw();
+                r.y += r.speed;
+                ctx.font = "25px Arial";
+                ctx.fillText("🌹", r.x-10, r.y);
 
-                if(r.y > canvas.height - 50 && Math.abs(r.x - playerX) < 40) {
-                    roses.splice(i, 1);
-                    i--;
+                if(r.y > canvas.height-50 && Math.abs(r.x-playerX) < 40) {
                     score++;
-                    scoreBoard.innerText = `Collected: ${score} / 5`;
-                    if(score >= 5) winGame();
-                } 
-                else if(r.y > canvas.height) {
-                    roses.splice(i, 1);
-                    i--;
+                    roses.splice(i,1); i--;
+                    document.getElementById('score-board').innerText = score + " / 5";
+                    if(score >= 5) endGame();
                 }
             }
             requestAnimationFrame(gameLoop);
         }
 
-        function winGame() {
-            gameRunning = false;
+        function endGame() {
+            gameActive = false;
             setTimeout(() => {
-                stageGame.style.display = 'none';
-                startMemoryLane();
+                document.getElementById('stage-game').style.display = 'none';
+                initGarden();
             }, 500);
         }
 
-        // 3. MEMORY LANE LOGIC
-        function startMemoryLane() {
-            stageMemory.style.display = 'flex';
-            let index = 0;
+        // --- 3. GARDEN LOGIC (NEW) ---
+        function initGarden() {
+            const container = document.getElementById('garden-container');
+            document.getElementById('stage-garden').style.display = 'flex';
+            let blooms = 0;
 
-            function showNextMemory() {
-                if(index < CONFIG.memories.length) {
-                    memoryText.innerText = CONFIG.memories[index];
-                    memoryText.classList.add('visible');
-                    
-                    setTimeout(() => {
-                        memoryText.classList.remove('visible');
-                        setTimeout(() => {
-                            index++;
-                            showNextMemory();
-                        }, 1000); // Wait before next text
-                    }, 3000); // How long text stays
-                } else {
-                    stageMemory.style.display = 'none';
-                    startLetterReveal();
-                }
-            }
-            showNextMemory();
+            CONFIG.gardenWords.forEach((word) => {
+                const pot = document.createElement('div');
+                pot.className = 'flower-pot';
+                pot.innerHTML = `
+                    <div class="flower">🌱</div>
+                    <div class="pot-label">${word}</div>
+                `;
+                
+                pot.onclick = function() {
+                    if(this.classList.contains('bloomed')) return;
+                    this.classList.add('bloomed');
+                    this.querySelector('.flower').innerText = "🌸";
+                    this.querySelector('.pot-label').style.opacity = '1';
+                    blooms++;
+                    if(blooms === 3) setTimeout(showWish, 1500);
+                };
+                
+                container.appendChild(pot);
+            });
         }
 
-        // 4. LETTER REVEAL
-        function startLetterReveal() {
-            stageWish.style.display = 'flex';
+        // --- 4. WISH LOGIC ---
+        function showWish() {
+            document.getElementById('stage-garden').style.display = 'none';
+            document.getElementById('stage-wish').style.display = 'flex';
+            
+            // Typewriter
             let i = 0;
-            const text = CONFIG.letterQuote;
-
+            const txt = CONFIG.letter;
             function type() {
-                if (i < text.length) {
-                    quoteDisplay.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+                if(i < txt.length) {
+                    document.getElementById('quote-display').innerHTML += 
+                        txt.charAt(i) === '\n' ? '<br>' : txt.charAt(i);
                     i++;
                     setTimeout(type, 50);
                 } else {
@@ -482,28 +464,46 @@
         }
 
         window.blowCandles = function() {
-            const cakeEmoji = document.querySelector('.cake-emoji');
-            
-            cakeEmoji.innerText = "🍰✨"; 
-            birthdayText.innerText = CONFIG.birthdayMessage;
-            birthdayText.classList.add('reveal');
-            fireConfetti();
+            document.querySelector('.cake-emoji').innerText = "🍰✨";
+            const msg = document.getElementById('final-msg');
+            msg.innerText = CONFIG.birthdayMessage;
+            msg.classList.add('show');
+            createConfetti();
         }
 
-        function fireConfetti() {
-            const colors = ['#ffccd5', '#ffd700', '#ffffff', '#ffb7b2'];
-            for(let i=0; i<100; i++) {
-                const conf = document.createElement('div');
-                conf.classList.add('confetti');
-                const bg = colors[Math.floor(Math.random() * colors.length)];
-                conf.style.backgroundColor = bg;
-                conf.style.left = Math.random() * 100 + 'vw';
-                conf.style.animationDuration = Math.random() * 3 + 2 + 's';
-                conf.style.width = Math.random() * 10 + 5 + 'px';
-                conf.style.height = conf.style.width;
-                document.body.appendChild(conf);
+        // --- EXTRAS ---
+        function createBackgroundHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'bg-heart';
+                heart.innerText = "🤍";
+                heart.style.left = Math.random() * 100 + "vw";
+                heart.style.animationDuration = (Math.random()*5 + 5) + "s";
+                heart.style.top = "100vh";
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 10000);
+            }, 1000);
+        }
+
+        function createConfetti() {
+            for(let i=0; i<50; i++) {
+                const c = document.createElement('div');
+                c.style.position = 'fixed';
+                c.style.width = '10px'; c.style.height='10px';
+                c.style.background = ['#ff8fa3', '#ffd700', '#fff'].sort(()=>0.5-Math.random())[0];
+                c.style.left = Math.random()*100+'vw';
+                c.style.top = '-10px';
+                c.style.zIndex = '999';
+                c.style.animation = `pulse 1s infinite, fall ${Math.random()*2+2}s linear forwards`; 
+                document.body.appendChild(c);
             }
         }
+        
+        // Add Fall Animation dynamically
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }`;
+        document.head.appendChild(style);
+
     </script>
 </body>
 </html>
