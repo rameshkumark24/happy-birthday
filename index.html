@@ -28,27 +28,6 @@
             overscroll-behavior-y: none;
         }
 
-        /* --- MUSIC BUTTON --- */
-        .music-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid var(--accent);
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            display: none; /* Hidden until start */
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-        }
-        .music-btn:hover { transform: scale(1.1); }
-
         /* --- 0. START SCREEN (ROMANTIC) --- */
         #stage-start {
             position: fixed;
@@ -286,15 +265,6 @@
 </head>
 <body>
 
-    <!-- 🎵 AUDIO SECTION 🎵 -->
-    <audio id="bg-music" loop preload="auto">
-        <!-- New Reliable Source: Romantic Piano -->
-        <source src="https://cdn.pixabay.com/audio/2022/02/07/audio_1423377771.mp3" type="audio/mp3">
-    </audio>
-
-    <!-- MUSIC TOGGLE BUTTON -->
-    <div id="music-control" class="music-btn" onclick="toggleMusic()">🎵</div>
-
     <!-- 0. START SCREEN -->
     <div id="stage-start">
         <div class="gift-container">🎁</div>
@@ -372,26 +342,10 @@
         /* ================================================================= */
 
         // --- GLOBAL VARIABLES ---
-        const audio = document.getElementById('bg-music');
         let currentStage = 0; 
 
         // --- 0. START EXPERIENCE ---
         function startExperience(event) {
-            // 1. Play Music (Higher volume)
-            audio.volume = 1.0; 
-            var promise = audio.play();
-            
-            if (promise !== undefined) {
-                promise.catch(error => {
-                    console.log("Audio play failed (Autoplay policy or error):", error);
-                    // Force show muted icon if play failed
-                    document.getElementById('music-control').innerText = "🔇";
-                });
-            }
-            
-            // Show Music Button
-            document.getElementById('music-control').style.display = 'flex';
-
             // 2. Glitter
             createGlitterExplosion(event.clientX, event.clientY);
 
@@ -404,18 +358,6 @@
                     createBackgroundHearts();
                 }, 1500); 
             }, 500);
-        }
-
-        // --- MUSIC TOGGLE ---
-        function toggleMusic() {
-            const btn = document.getElementById('music-control');
-            if(audio.paused) {
-                audio.play();
-                btn.innerText = "🎵";
-            } else {
-                audio.pause();
-                btn.innerText = "🔇";
-            }
         }
 
         function createGlitterExplosion(x, y) {
