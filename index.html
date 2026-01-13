@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Special Wish</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CORE STYLES --- */
+        :root {
+            --bg-gradient-start: #fff0f3;
+            --bg-gradient-end: #fff5f5;
+            --accent-color: #ff8fa3;
+            --text-color: #594a4e;
+            --paper-color: #fffdf0;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', sans-serif;
+            color: var(--text-color);
+            background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            overflow-x: hidden;
+            overscroll-behavior-y: none;
+        }
+
+        /* --- MUSIC BUTTON --- */
+        .music-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* --- STAGE 1: SCROLL --- */
+        #stage-scroll {
+            height: 300vh;
+            position: relative;
+            background-image: radial-gradient(#ffccd5 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .fixed-cupid-container {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+            transition: all 0.5s ease-out;
+        }
+
+        .cupid-emoji {
+            font-size: 6rem;
+            display: block;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
+            transition: transform 0.3s;
+        }
+
+        .speech-bubble {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s ease;
+            position: absolute;
+            bottom: 100%; left: 50%;
+            transform: translateX(-50%);
+            width: max-content;
+            max-width: 80vw;
+        }
+        .speech-bubble.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+        
+        .scroll-indicator {
+            position: fixed;
+            bottom: 30px; width: 100%;
+            text-align: center;
+            animation: float 2s infinite ease-in-out;
+            color: var(--accent-color);
+            z-index: 5;
+        }
+
+        /* --- STAGE 2: GAME --- */
+        #stage-game {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        canvas {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 2px solid #ffe0e6;
+            touch-action: none;
+        }
+
+        /* --- STAGE 3: MEMORY LANE (SLIDESHOW) --- */
+        #stage-memory {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #fff0f3;
+            z-index: 150;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .memory-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.5rem;
+            color: #d63384;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+        .memory-text.visible { opacity: 1; transform: translateY(0); }
+
+        /* --- STAGE 4: WISH --- */
+        #stage-wish {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: radial-gradient(circle, #fff0f3 0%, #ffe6e9 100%);
+            z-index: 200;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        /* Paper Letter Style */
+        .paper-letter {
+            background: var(--paper-color);
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            max-width: 500px;
+            margin-bottom: 40px;
+            position: relative;
+            transform: rotate(-1deg);
+        }
+        .paper-letter::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 5px;
+            background: repeating-linear-gradient(45deg, #ff8fa3, #ff8fa3 10px, white 10px, white 20px);
+            border-radius: 5px 5px 0 0;
+        }
+
+        .quote-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2rem;
+            color: #594a4e;
+            line-height: 1.6;
+            min-height: 100px;
+        }
+
+        .cake-wrapper {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .cake-wrapper:hover { transform: scale(1.05); }
+        .cake-emoji { font-size: 5rem; }
+        
+        .final-message {
+            margin-top: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.8s;
+        }
+        .final-message.reveal { opacity: 1; transform: scale(1); }
+
+        /* Animations */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+        .confetti { position: absolute; width: 10px; height: 10px; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+
+    </style>
+</head>
+<body>
+
+    <!-- AUDIO PLAYER (Hidden) -->
+    <!-- Note: Browsers block auto-play. User must interact with the page first. -->
+    <audio id="bg-music" loop>
+        <!-- A soft, royalty free piano track -->
+        <source src="https://cdn.pixabay.com/audio/2022/02/07/audio_1423377771.mp3" type="audio/mp3">
+    </audio>
+    <div class="music-btn" onclick="toggleMusic()">🎵</div>
+
+    <!-- STAGE 1: SCROLL -->
+    <div id="stage-scroll">
+        <div class="fixed-cupid-container">
+            <div class="speech-bubble" id="cupid-text">Hello Madam Ji! 👋</div>
+            <div class="cupid-emoji" id="cupid-char">👼</div>
+        </div>
+        <div class="scroll-indicator" id="scroll-hint">Scroll down slowly...</div>
+    </div>
+
+    <!-- STAGE 2: GAME -->
+    <div id="stage-game">
+        <div style="text-align:center; margin-bottom: 20px;">
+            <h2 style="color: #d63384;">Catch the White Roses 🤍</h2>
+            <p>Gather 5 to unlock the surprise</p>
+            <h3 id="score-board">Collected: 0 / 5</h3>
+        </div>
+        <canvas id="gameCanvas" width="320" height="450"></canvas>
+    </div>
+
+    <!-- STAGE 3: MEMORY LANE -->
+    <div id="stage-memory">
+        <div class="memory-text" id="memory-text"></div>
+    </div>
+
+    <!-- STAGE 4: FINAL WISH -->
+    <div id="stage-wish">
+        <div class="paper-letter">
+            <div class="quote-text" id="quote-display"></div>
+        </div>
+        
+        <div class="cake-wrapper" id="cake-section" onclick="blowCandles()" style="opacity:0; transition: opacity 1s;">
+            <div class="cake-emoji">🎂</div>
+            <div style="font-size: 0.9rem; color: #999;">Make a wish & tap me!</div>
+        </div>
+
+        <div class="final-message" id="birthday-text">
+            Happy Birthday!
+        </div>
+    </div>
+
+    <script>
+        /* =================================================================
+           💖 CONFIGURATION AREA - EDIT HERE FOR MADAM JI 💖
+        ================================================================= */
+        const CONFIG = {
+            // 1. The Name
+            name: "Madam Ji", 
+
+            // 2. The Final Birthday Message
+            birthdayMessage: "Happy Birthday, Madam Ji! ❤️",
+
+            // 3. The "Memory Lane" - 3 short compliments that show up before the letter
+            // (Keep them inside the quotes "", separate with commas)
+            memories: [
+                "Your smile lights up the world...",
+                "You are strong and kind...",
+                "I am so lucky to know you."
+            ],
+
+            // 4. The Poetic Letter (Use \n for new line)
+            letterQuote: "Like a white rose, you are rare and beautiful.\nMay your year be filled with as much joy\nas you bring to everyone around you.",
+
+            // Cupid's dialogue while scrolling
+            scrollTexts: [
+                "Hello Madam Ji! 👋",
+                "I have a mission... 🏹",
+                "To deliver a smile! 💖",
+                "Almost there...",
+                "Catch the roses! 👇"
+            ]
+        };
+        /* ================================================================= */
+
+
+        // --- LOGIC ---
+        const stageScroll = document.getElementById('stage-scroll');
+        const cupidChar = document.getElementById('cupid-char');
+        const cupidText = document.getElementById('cupid-text');
+        
+        const stageGame = document.getElementById('stage-game');
+        const scoreBoard = document.getElementById('score-board');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const stageMemory = document.getElementById('stage-memory');
+        const memoryText = document.getElementById('memory-text');
+
+        const stageWish = document.getElementById('stage-wish');
+        const quoteDisplay = document.getElementById('quote-display');
+        const birthdayText = document.getElementById('birthday-text');
+
+        // Music Logic
+        const music = document.getElementById('bg-music');
+        let musicPlaying = false;
+        function toggleMusic() {
+            if(musicPlaying) {
+                music.pause();
+                document.querySelector('.music-btn').innerText = "🔇";
+            } else {
+                music.play().catch(e => console.log("Click to play needed"));
+                document.querySelector('.music-btn').innerText = "🎵";
+            }
+            musicPlaying = !musicPlaying;
+        }
+
+        // 1. SCROLL HANDLER
+        window.addEventListener('scroll', () => {
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scrolled = window.scrollY;
+            const progress = Math.min(scrolled / maxScroll, 1);
+
+            const textIndex = Math.floor(progress * CONFIG.scrollTexts.length);
+            if (CONFIG.scrollTexts[textIndex]) {
+                cupidText.innerText = CONFIG.scrollTexts[textIndex];
+                cupidText.classList.add('show');
+            }
+
+            // Cupid Transformation
+            if (progress < 0.2) {
+                cupidChar.innerText = "👼"; 
+                cupidChar.style.transform = `scale(1) rotate(0deg)`;
+            } else if (progress < 0.5) {
+                cupidChar.innerText = "🏹"; 
+                cupidChar.style.transform = `scale(1.2) rotate(-10deg)`;
+            } else if (progress < 0.8) {
+                cupidChar.innerText = "💘"; 
+                cupidChar.style.transform = `scale(1.3) rotate(10deg)`;
+            } else {
+                cupidChar.style.opacity = '0';
+                document.getElementById('scroll-hint').style.opacity = '0';
+                if(stageGame.style.display !== 'flex') launchGame();
+            }
+        });
+
+        // 2. GAME LOGIC
+        let gameRunning = false;
+        let score = 0;
+        let playerX = canvas.width / 2;
+        let roses = [];
+
+        function launchGame() {
+            window.scrollTo(0,0);
+            stageScroll.style.display = 'none';
+            stageGame.style.display = 'flex';
+            
+            if(window.innerWidth < 400) canvas.width = window.innerWidth - 40;
+
+            gameRunning = true;
+            gameLoop();
+            spawnRose();
+            
+            canvas.addEventListener('mousemove', e => {
+                const rect = canvas.getBoundingClientRect();
+                playerX = e.clientX - rect.left;
+            });
+            canvas.addEventListener('touchmove', e => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                playerX = e.touches[0].clientX - rect.left;
+            }, { passive: false });
+        }
+
+        class Rose {
+            constructor() {
+                this.x = Math.random() * (canvas.width - 30) + 15;
+                this.y = -30;
+                this.speed = Math.random() * 2 + 2;
+                this.size = 25;
+            }
+            update() { this.y += this.speed; }
+            draw() {
+                ctx.font = `${this.size}px Arial`;
+                ctx.fillText("🤍", this.x - 10, this.y);
+            }
+        }
+
+        function spawnRose() {
+            if(!gameRunning) return;
+            roses.push(new Rose());
+            setTimeout(spawnRose, 800);
+        }
+
+        function gameLoop() {
+            if(!gameRunning) return;
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+
+            // Cupid
+            ctx.font = "40px Arial";
+            ctx.fillText("👼", playerX - 20, canvas.height - 10);
+
+            // Roses
+            for(let i = 0; i < roses.length; i++) {
+                let r = roses[i];
+                r.update();
+                r.draw();
+
+                if(r.y > canvas.height - 50 && Math.abs(r.x - playerX) < 40) {
+                    roses.splice(i, 1);
+                    i--;
+                    score++;
+                    scoreBoard.innerText = `Collected: ${score} / 5`;
+                    if(score >= 5) winGame();
+                } 
+                else if(r.y > canvas.height) {
+                    roses.splice(i, 1);
+                    i--;
+                }
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        function winGame() {
+            gameRunning = false;
+            setTimeout(() => {
+                stageGame.style.display = 'none';
+                startMemoryLane();
+            }, 500);
+        }
+
+        // 3. MEMORY LANE LOGIC
+        function startMemoryLane() {
+            stageMemory.style.display = 'flex';
+            let index = 0;
+
+            function showNextMemory() {
+                if(index < CONFIG.memories.length) {
+                    memoryText.innerText = CONFIG.memories[index];
+                    memoryText.classList.add('visible');
+                    
+                    setTimeout(() => {
+                        memoryText.classList.remove('visible');
+                        setTimeout(() => {
+                            index++;
+                            showNextMemory();
+                        }, 1000); // Wait before next text
+                    }, 3000); // How long text stays
+                } else {
+                    stageMemory.style.display = 'none';
+                    startLetterReveal();
+                }
+            }
+            showNextMemory();
+        }
+
+        // 4. LETTER REVEAL
+        function startLetterReveal() {
+            stageWish.style.display = 'flex';
+            let i = 0;
+            const text = CONFIG.letterQuote;
+
+            function type() {
+                if (i < text.length) {
+                    quoteDisplay.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+                    i++;
+                    setTimeout(type, 50);
+                } else {
+                    document.getElementById('cake-section').style.opacity = '1';
+                }
+            }
+            type();
+        }
+
+        window.blowCandles = function() {
+            const cakeEmoji = document.querySelector('.cake-emoji');
+            
+            cakeEmoji.innerText = "🍰✨"; 
+            birthdayText.innerText = CONFIG.birthdayMessage;
+            birthdayText.classList.add('reveal');
+            fireConfetti();
+        }
+
+        function fireConfetti() {
+            const colors = ['#ffccd5', '#ffd700', '#ffffff', '#ffb7b2'];
+            for(let i=0; i<100; i++) {
+                const conf = document.createElement('div');
+                conf.classList.add('confetti');
+                const bg = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.backgroundColor = bg;
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.animationDuration = Math.random() * 3 + 2 + 's';
+                conf.style.width = Math.random() * 10 + 5 + 'px';
+                conf.style.height = conf.style.width;
+                document.body.appendChild(conf);
+            }
+        }
+    </script>
+</body>
+</html>
