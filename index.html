@@ -28,6 +28,27 @@
             overscroll-behavior-y: none;
         }
 
+        /* --- MUSIC BUTTON --- */
+        .music-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: none; /* Hidden until start */
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .music-btn:hover { transform: scale(1.1); }
+
         /* --- 0. START SCREEN (ROMANTIC) --- */
         #stage-start {
             position: fixed;
@@ -269,9 +290,12 @@
     <!-- 🎵 MUSIC CONFIGURATION 🎵 -->
     <!-- REPLACE the 'src' link below with your own hosted URL if you have one! -->
     <audio id="bg-music" loop>
-        <!-- Currently using a soft romantic piano melody -->
-        <source src="https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3" type="audio/mp3">
+        <!-- Using a deeper, more emotional melody -->
+        <source src="https://cdn.pixabay.com/audio/2022/11/22/audio_febc508520.mp3" type="audio/mp3">
     </audio>
+
+    <!-- MUSIC CONTROL BUTTON -->
+    <div id="music-control" class="music-btn" onclick="toggleMusic()">🎵</div>
 
     <!-- 0. START SCREEN -->
     <div id="stage-start">
@@ -314,7 +338,7 @@
         
         <div id="cake-section" style="text-align:center; opacity:0; transition:opacity 1s;">
             <div class="cake-emoji" onclick="blowCandles()">🎂</div>
-            <p style="font-size:1rem; color:#999; margin-top:10px; font-style:italic;">Make a wish within your heart...</p>
+            <p style="font-size:1rem; color:#999; margin-top:10px; font-style:italic;">Make a wish within your heart... and cut the cake</p>
         </div>
 
         <div class="final-msg" id="final-msg"></div>
@@ -360,6 +384,9 @@
             // 1. Play Music
             audio.volume = 0.5;
             audio.play().catch(e => console.log("Audio failed", e));
+            
+            // Show Music Control Button
+            document.getElementById('music-control').style.display = 'flex';
 
             // 2. Glitter Explosion!
             createGlitterExplosion(event.clientX, event.clientY);
@@ -373,6 +400,18 @@
                     createBackgroundHearts();
                 }, 1500); // Wait for glitter to settle
             }, 500);
+        }
+        
+        // --- MUSIC TOGGLE FUNCTION ---
+        function toggleMusic() {
+            const btn = document.getElementById('music-control');
+            if(audio.paused) {
+                audio.play();
+                btn.innerText = "🎵";
+            } else {
+                audio.pause();
+                btn.innerText = "🔇";
+            }
         }
 
         function createGlitterExplosion(x, y) {
