@@ -287,9 +287,9 @@
 <body>
 
     <!-- 🎵 AUDIO SECTION 🎵 -->
-    <audio id="bg-music" loop>
-        <!-- Soft Piano & Strings (Safe, Loving, Romantic) -->
-        <source src="https://cdn.pixabay.com/audio/2022/03/23/audio_07a976c5b9.mp3" type="audio/mp3">
+    <audio id="bg-music" loop preload="auto">
+        <!-- New Reliable Source: Romantic Piano -->
+        <source src="https://cdn.pixabay.com/audio/2022/02/07/audio_1423377771.mp3" type="audio/mp3">
     </audio>
 
     <!-- MUSIC TOGGLE BUTTON -->
@@ -377,9 +377,17 @@
 
         // --- 0. START EXPERIENCE ---
         function startExperience(event) {
-            // 1. Play Music (Soft volume)
-            audio.volume = 0.5;
-            audio.play().catch(e => console.log("Audio failed", e));
+            // 1. Play Music (Higher volume)
+            audio.volume = 1.0; 
+            var promise = audio.play();
+            
+            if (promise !== undefined) {
+                promise.catch(error => {
+                    console.log("Audio play failed (Autoplay policy or error):", error);
+                    // Force show muted icon if play failed
+                    document.getElementById('music-control').innerText = "🔇";
+                });
+            }
             
             // Show Music Button
             document.getElementById('music-control').style.display = 'flex';
